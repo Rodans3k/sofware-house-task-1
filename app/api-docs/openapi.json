@@ -1,0 +1,157 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Movies - OpenAPI 3.0",
+    "description": "description",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.11"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "tags": [
+    {
+      "name": "movies",
+      "description": "Everything about your movies"
+    }
+  ],
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/movies": {
+      "get": {
+        "summary": "Get movies from DB",
+        "description": "Get movies from DB, that fullfill given parameters. With no parameters given, returns single random movie",
+        "operationId": "getMovies",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "duration",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Film duration in minutes. Returns movies within 10 minutes range"
+          },
+          {
+            "in": "query",
+            "name": "genres",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Movie genres in single strings, separated by comma, e.g. \"Comedy, Fantasy\". Search returns a movie, if it has at least 1 matching genre. Movies are sorted from most matches to least."
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Default error sample response"
+          }
+        },
+        "tags": ["movies"]
+      },
+      "post": {
+        "tags": ["movies"],
+        "summary": "Add a new movie to db",
+        "description": "Add a new movie to db",
+        "operationId": "addMovie",
+        "requestBody": {
+          "description": "Create a new pet in the store",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Movie"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Movie": {
+        "required": ["title", "genres", "year", "runtime", "director"],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Shining"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Genre"
+            },
+            "example": ["Comedy", "History"]
+          },
+          "year": {
+            "type": "number",
+            "example": 2011
+          },
+          "runtime": {
+            "type": "number",
+            "example": 140
+          },
+          "director": {
+            "type": "string",
+            "example": "Wes Anderson"
+          },
+          "actors": {
+            "type": "string",
+            "example": "Samuel L. Jackson, Keanu Reeves"
+          },
+          "plot": {
+            "type": "string",
+            "example": "Following a truck hijack in New York, five criminals are arrested and brought together for questioning. As none of them are guilty, they plan a revenge operation against the police. The operation goes well, but then the influence of a legendary mastermind criminal called Keyser Söze is felt. It becomes clear that each one of them has wronged Söze at some point and must pay back now. The payback job leaves 27 men dead in a boat explosion, but the real question arises now: Who actually is Keyser Söze?"
+          },
+          "posterUrl": {
+            "type": "string",
+            "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          }
+        }
+      },
+      "Genre": {
+        "type": "string",
+        "enum": [
+          "Comedy",
+          "Fantasy",
+          "Crime",
+          "Drama",
+          "Music",
+          "Adventure",
+          "History",
+          "Thriller",
+          "Animation",
+          "Family",
+          "Mystery",
+          "Biography",
+          "Action",
+          "Film-Noir",
+          "Romance",
+          "Sci-Fi",
+          "War",
+          "Western",
+          "Horror",
+          "Musical",
+          "Sport"
+        ],
+        "example": "Comedy"
+      }
+    }
+  }
+}
