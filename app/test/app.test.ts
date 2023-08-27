@@ -753,20 +753,91 @@ describe("Testing /movies POST endpoint", async () => {
         genres: allowedGenres,
         movies: [exampleMovies[0]],
       }, {
-        title: "string",
-        year: "string",
-        runtime: "string",
-        genres: [],
-        director: "string",
-  }]
+        year: exampleMovies[1].year,
+        runtime: exampleMovies[1].runtime,
+        genres: exampleMovies[1].genres,
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        runtime: exampleMovies[1].runtime,
+        genres: exampleMovies[1].genres,
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        year: "invalid year",
+        runtime: exampleMovies[1].runtime,
+        genres: exampleMovies[1].genres,
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        year: exampleMovies[1].year,
+        genres: exampleMovies[1].genres,
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        year: exampleMovies[1].year,
+        runtime: "invalid runtime",
+        genres: exampleMovies[1].genres,
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        year: exampleMovies[1].year,
+        runtime: exampleMovies[1].runtime,
+        genres: [illegalGenres[0], allowedGenres[0]],
+        director: exampleMovies[1].director
+      }],
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: exampleMovies[1].title,
+        year: exampleMovies[1].year,
+        runtime: exampleMovies[1].runtime,
+        genres: exampleMovies[1].genres,
+      }],
     ])("Returns 400 if any parameter is invalid", async (initialDbContent: MovieJsonObject, postBody: object) => {
       // Prepare
       appMockedDb.setDbData(initialDbContent);
       const app = createApp(appMockedDb);
+      
       // Execute
       const response = await request(app).post(endpoint).send(postBody)
+      
       // Compare
+      expect(response.statusCode).toEqual(400)
+    })
 
+    it.each([])("Returns 200 and properly saves data into db", async (initialDbContent: MovieJsonObject, postBody: object, expectedSave: MovieJsonObject) => {
+      // Prepare
+      appMockedDb.setDbData(initialDbContent);
+      const app = createApp(appMockedDb);
+      
+      // Execute
+      const response = await request(app).post(endpoint).send(postBody)
+    
+      // Compare
+      expect(response.statusCode).toEqual(200)
+      expect
     })
   })
 });
