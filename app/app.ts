@@ -1,10 +1,15 @@
 import express from "express";
 import { apiDocs } from "./api-docs/api-docs";
-import { DatabaseOperations } from "./db/db";
+import { DbConnector } from "./db/db";
+import { initDataBase } from "./db/dbInit";
+import { moviesRouter } from "./routes/moviesRouter";
 
-export const createApp = (dbConnector: DatabaseOperations) => {
+
+export const createApp = (db: DbConnector) => {
+  initDataBase(db);
   const app = express();
   app.use("/docs", apiDocs);
+  app.use("/api", moviesRouter);
 
   return app;
 };

@@ -1,8 +1,9 @@
 import request from "supertest";
 import { createApp } from "../app";
-import { DatabaseOperations, Movie, MovieJsonObject } from "../db/db";
+import { DbConnector, Movie, MovieJsonObject } from "../db/db";
+import { initDataBase } from "../db/dbInit";
 // Mocking filesaving
-class MockedDb implements DatabaseOperations {
+class MockedDb implements DbConnector {
   constructor() {}
   dbData: MovieJsonObject;
   readDB = jest.fn(async () => {
@@ -85,8 +86,6 @@ const exampleMovies = [
     director: "Trey Parker",
   },
 ];
-
-appMockedDb.writeDB.mock.lastCall;
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -1,10 +1,10 @@
 import { createApp } from "./app";
-import { DbConnector } from "./db/db";
+import { JsonFileConnector } from "./db/db";
 
 const port = process.env.PORT || 3000;
 const dbJsonPath = process.env.DB_FILE_PATH || "";
 
-const db = new DbConnector({ filePath: dbJsonPath });
+const db = new JsonFileConnector({ filePath: dbJsonPath });
 const app = createApp(db);
 
 const server = app.listen(port, onListening);

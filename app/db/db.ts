@@ -1,7 +1,8 @@
 import { PathLike } from "fs";
 import * as fs from "fs/promises";
+import path from "path";
 
-export interface DatabaseOperations {
+export interface DbConnector {
   readDB(): Promise<MovieJsonObject>;
   writeDB(dataToWrite: MovieJsonObject): Promise<void>;
 }
@@ -46,7 +47,7 @@ function isMovieJsonObject(a): a is MovieJsonObject {
   );
 }
 
-export class DbConnector implements DatabaseOperations {
+export class JsonFileConnector implements DbConnector {
   filePath: PathLike;
 
   constructor(parameters: { filePath: PathLike }) {
