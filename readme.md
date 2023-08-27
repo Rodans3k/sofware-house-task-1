@@ -1,3 +1,5 @@
+# software-house-task-1
+
 ## Running app
 
 How to run application:
@@ -44,7 +46,7 @@ Note: Using swagger UI it's possible to query those endpoints from browser.
 ## Application development
 
 ### Scripts
-`package.json` includes few scripts to help development`
+`package.json` includes few scripts to help development
 
 Running tests:
 ```bash
@@ -61,7 +63,7 @@ npm run start-test
 ```
 
 ### Working with docker compose
-[docker compose CLI reference](https://docs.docker.com/compose/reference/)
+- [docker compose CLI reference](https://docs.docker.com/compose/reference/)
 
 To connect into running docker compose container run:
 ```bash
@@ -69,7 +71,7 @@ docker compose exec server /bin/sh
 ```
 This allows to comfortably run commands inside container.
 
-Alternatively run 
+Alternatively run: 
 ```bash
 docker compose exec server <command> 
 ```
