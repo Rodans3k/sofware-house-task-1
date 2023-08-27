@@ -5,7 +5,7 @@ export interface DatabaseOperations {
   readDB(): Promise<MovieJsonObject>;
   writeDB(dataToWrite: MovieJsonObject): Promise<void>;
 }
-interface Movie {
+export interface Movie {
   id: number;
   title: string;
   year: string;

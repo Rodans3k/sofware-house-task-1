@@ -1,6 +1,6 @@
 import request from "supertest";
 import { createApp } from "../app";
-import { DatabaseOperations, MovieJsonObject } from "../db/db";
+import { DatabaseOperations, Movie, MovieJsonObject } from "../db/db";
 // Mocking filesaving
 class MockedDb implements DatabaseOperations {
   constructor() {}
@@ -749,95 +749,170 @@ describe("Testing /movies POST endpoint", async () => {
   const endpoint = `/api/movies`;
   describe("only required fields", () => {
     it.each([
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        year: exampleMovies[1].year,
-        runtime: exampleMovies[1].runtime,
-        genres: exampleMovies[1].genres,
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        runtime: exampleMovies[1].runtime,
-        genres: exampleMovies[1].genres,
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        year: "invalid year",
-        runtime: exampleMovies[1].runtime,
-        genres: exampleMovies[1].genres,
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        year: exampleMovies[1].year,
-        genres: exampleMovies[1].genres,
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        year: exampleMovies[1].year,
-        runtime: "invalid runtime",
-        genres: exampleMovies[1].genres,
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        year: exampleMovies[1].year,
-        runtime: exampleMovies[1].runtime,
-        genres: [illegalGenres[0], allowedGenres[0]],
-        director: exampleMovies[1].director
-      }],
-      [{
-        genres: allowedGenres,
-        movies: [exampleMovies[0]],
-      }, {
-        title: exampleMovies[1].title,
-        year: exampleMovies[1].year,
-        runtime: exampleMovies[1].runtime,
-        genres: exampleMovies[1].genres,
-      }],
-    ])("Returns 400 if any parameter is invalid", async (initialDbContent: MovieJsonObject, postBody: object) => {
-      // Prepare
-      appMockedDb.setDbData(initialDbContent);
-      const app = createApp(appMockedDb);
-      
-      // Execute
-      const response = await request(app).post(endpoint).send(postBody)
-      
-      // Compare
-      expect(response.statusCode).toEqual(400)
-    })
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          year: exampleMovies[1].year,
+          runtime: exampleMovies[1].runtime,
+          genres: exampleMovies[1].genres,
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          runtime: exampleMovies[1].runtime,
+          genres: exampleMovies[1].genres,
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          year: "invalid year",
+          runtime: exampleMovies[1].runtime,
+          genres: exampleMovies[1].genres,
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          year: exampleMovies[1].year,
+          genres: exampleMovies[1].genres,
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          year: exampleMovies[1].year,
+          runtime: "invalid runtime",
+          genres: exampleMovies[1].genres,
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          year: exampleMovies[1].year,
+          runtime: exampleMovies[1].runtime,
+          genres: [illegalGenres[0], allowedGenres[0]],
+          director: exampleMovies[1].director,
+        },
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          title: exampleMovies[1].title,
+          year: exampleMovies[1].year,
+          runtime: exampleMovies[1].runtime,
+          genres: exampleMovies[1].genres,
+        },
+      ],
+    ])(
+      "Returns 400 if any parameter is invalid",
+      async (initialDbContent: MovieJsonObject, postBody: object) => {
+        // Prepare
+        appMockedDb.setDbData(initialDbContent);
+        const app = createApp(appMockedDb);
 
-    it.each([])("Returns 200 and properly saves data into db", async (initialDbContent: MovieJsonObject, postBody: object, expectedSave: MovieJsonObject) => {
+        // Execute
+        const response = await request(app).post(endpoint).send(postBody);
+
+        // Compare
+        expect(response.statusCode).toEqual(400);
+        expect(appMockedDb.writeDB.mock.calls.length).toEqual(0);
+      },
+    );
+
+    it("Returns 400 for valid movie if movie is duplicated", async () => {
       // Prepare
+      const initialDbContent = { genres: allowedGenres, movies: exampleMovies };
+      const postBody = { ...exampleMovies[0], id: undefined };
       appMockedDb.setDbData(initialDbContent);
       const app = createApp(appMockedDb);
-      
+
       // Execute
-      const response = await request(app).post(endpoint).send(postBody)
-    
+      const response = await request(app).post(endpoint).send(postBody);
+
       // Compare
-      expect(response.statusCode).toEqual(200)
-      expect
-    })
-  })
+      expect(response.statusCode).toEqual(400);
+      expect(appMockedDb.writeDB.mock.calls.length).toEqual(0);
+    });
+
+    it.each([
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0]],
+        },
+        {
+          ...exampleMovies[1],
+          id: undefined,
+        },
+        exampleMovies[1],
+      ],
+      [
+        {
+          genres: allowedGenres,
+          movies: [exampleMovies[0], exampleMovies[2]],
+        },
+        {
+          ...exampleMovies[1],
+          id: undefined,
+        },
+        exampleMovies[1],
+      ],
+    ])(
+      "Returns 200 and properly saves data into db",
+      async (
+        initialDbContent: MovieJsonObject,
+        postBody: object,
+        expectedResponseBody: Movie,
+      ) => {
+        // Prepare
+        appMockedDb.setDbData(initialDbContent);
+        const expectedSave: MovieJsonObject = {
+          ...initialDbContent,
+          movies: [...initialDbContent.movies, expectedResponseBody],
+        };
+        const app = createApp(appMockedDb);
+
+        // Execute
+        const response = await request(app).post(endpoint).send(postBody);
+
+        // Compare
+        expect(response.statusCode).toEqual(200);
+        expect(response.body).toEqual(expectedResponseBody);
+        expect(appMockedDb.writeDB.mock.lastCall).toEqual(expectedSave);
+      },
+    );
+  });
 });
