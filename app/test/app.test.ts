@@ -745,6 +745,28 @@ describe("Testing /movies GET endpoint", () => {
   });
 });
 
-// describe("Testing /movies POST endpoint", async () => {
-//
-// });
+describe("Testing /movies POST endpoint", async () => {
+  const endpoint = `/api/movies`;
+  describe("only required fields", () => {
+    it.each([
+      [{
+        genres: allowedGenres,
+        movies: [exampleMovies[0]],
+      }, {
+        title: "string",
+        year: "string",
+        runtime: "string",
+        genres: [],
+        director: "string",
+  }]
+    ])("Returns 400 if any parameter is invalid", async (initialDbContent: MovieJsonObject, postBody: object) => {
+      // Prepare
+      appMockedDb.setDbData(initialDbContent);
+      const app = createApp(appMockedDb);
+      // Execute
+      const response = await request(app).post(endpoint).send(postBody)
+      // Compare
+
+    })
+  })
+});
