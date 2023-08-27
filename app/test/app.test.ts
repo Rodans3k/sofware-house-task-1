@@ -745,7 +745,7 @@ describe("Testing /movies GET endpoint", () => {
   });
 });
 
-describe("Testing /movies POST endpoint", async () => {
+describe("Testing /movies POST endpoint", () => {
   const endpoint = `/api/movies`;
   describe("only required fields", () => {
     it.each([
