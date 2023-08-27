@@ -140,7 +140,7 @@ describe("Testing /movies GET endpoint", () => {
         movies: [],
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: allowedGenres[0],
       };
       appMockedDb.setDbData(initialDbContent);
@@ -166,7 +166,7 @@ describe("Testing /movies GET endpoint", () => {
         ],
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: allowedGenres[0],
       };
       appMockedDb.setDbData(initialDbContent);
@@ -194,7 +194,7 @@ describe("Testing /movies GET endpoint", () => {
         ],
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: `${allowedGenres[0]}, ${allowedGenres[5]}`,
       };
       appMockedDb.setDbData(initialDbContent);
@@ -237,7 +237,7 @@ describe("Testing /movies GET endpoint", () => {
         ],
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: `${allowedGenres[0]}, ${allowedGenres[1]}, ${allowedGenres[1]}`,
       };
       appMockedDb.setDbData(initialDbContent);
@@ -262,7 +262,7 @@ describe("Testing /movies GET endpoint", () => {
         movies: exampleMovies,
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: `${illegalGenres[0]}`,
       };
       appMockedDb.setDbData(initialDbContent);
@@ -283,7 +283,7 @@ describe("Testing /movies GET endpoint", () => {
         movies: exampleMovies,
       };
       const searchParameters = {
-        duration: undefined,
+        runtime: undefined,
         genres: `${illegalGenres[0]}, ${allowedGenres[0]}`,
       };
       appMockedDb.setDbData(initialDbContent);
@@ -298,25 +298,64 @@ describe("Testing /movies GET endpoint", () => {
       expect(response.statusCode).toEqual(400);
     });
   });
-  describe("Testing duration search", () => {
-    it("Returns 404 if no movies in DB ", async () => {
+  describe("Testing runtime search", () => {
+    it("Returns 200 with empty list if no movies are present in DB", async () => {
       // Prepare
+      const expectedResponseBody = [];
+      const initialDbContent: MovieJsonObject = {
+        genres: allowedGenres,
+        movies: [],
+      };
+      const searchParameters = {
+        runtime: `60`,
+        genres: undefined,
+      };
+      appMockedDb.setDbData(initialDbContent);
+      const app = createApp(appMockedDb);
 
-      // Executa
+      // Execute
+      const response = await request(app)
+        .get(`${endpoint}`)
+        .query(searchParameters);
 
       // Compare
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual(expectedResponseBody);
+    });
+    it("Returns 200 with empty list if no movies match the search criteria", async () => {
+      // Prepare
+      const expectedResponseBody = [];
+      const initialDbContent: MovieJsonObject = {
+        genres: allowedGenres,
+        movies: [
+          { ...exampleMovies[0], runtime: "49" },
+          { ...exampleMovies[1], runtime: "71" },
+        ],
+      };
+      const searchParameters = {
+        runtime: `60`,
+        genres: undefined,
+      };
+      appMockedDb.setDbData(initialDbContent);
+      const app = createApp(appMockedDb);
+
+      // Execute
+      const response = await request(app)
+        .get(`${endpoint}`)
+        .query(searchParameters);
+
+      // Compare
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual(expectedResponseBody);
+    });
+    it("Returns 200 with matching list of movies", async () => {
       expect(1).toBe(2);
     });
-    it("Returns 404 if no movies match the search criteria", async () => {
-      // Prepare
-
-      // Executa
-
-      // Compare
+    it("Returns 200 with matching list of movies, contains edge cases", async () => {
       expect(1).toBe(2);
     });
   });
-  describe("Testing genre and duration search", () => {
+  describe("Testing genre and runtime search", () => {
     it("Returns 404 if no movies in DB ", async () => {
       // Prepare
 
