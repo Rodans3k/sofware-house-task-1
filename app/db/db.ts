@@ -1,13 +1,16 @@
-import e from "express";
 import { PathLike } from "fs";
 import * as fs from "fs/promises";
 
+export interface DatabaseOperations {
+  readDB(): Promise<MovieJsonObject>;
+  writeDB(dataToWrite: MovieJsonObject): Promise<void>;
+}
 interface Movie {
   id: number;
   title: string;
   year: string;
   runtime: string;
-  genres: [string];
+  genres: string[];
   director: string;
   actors?: string;
   plot?: string;
@@ -27,9 +30,9 @@ function isMovie(a): a is Movie {
   );
 }
 
-interface MovieJsonObject {
-  genres: [string];
-  movies: [Movie];
+export interface MovieJsonObject {
+  genres?: string[];
+  movies?: Movie[];
 }
 
 function isMovieJsonObject(a): a is MovieJsonObject {
@@ -43,84 +46,26 @@ function isMovieJsonObject(a): a is MovieJsonObject {
   );
 }
 
-class databaseConnector {
+export class DbConnector implements DatabaseOperations {
   filePath: PathLike;
 
   constructor(parameters: { filePath: PathLike }) {
     this.filePath = parameters.filePath;
   }
 
-  async readMovies(): Promise<Movie[]> {
+  async readDB(): Promise<MovieJsonObject> {
     const fileHandle = await fs.open(this.filePath);
     const data = await fileHandle.readFile({ encoding: "utf-8" });
+    await fileHandle.close();
     const dataAsJson = JSON.parse(data);
     if (isMovieJsonObject(dataAsJson)) {
-      const { movies } = dataAsJson;
-      return movies;
-    } else throw new Error("DB read error: no valid data for movies");
+      return dataAsJson;
+    } else throw new Error("DB read error: no valid data in DB");
   }
 
-  async readGenres(): Promise<string[]> {
+  async writeDB(dataToWrite: MovieJsonObject): Promise<void> {
     const fileHandle = await fs.open(this.filePath);
-    const data = await fileHandle.readFile({ encoding: "utf-8" });
-    const dataAsJson = JSON.parse(data);
-    if (isMovieJsonObject(dataAsJson)) {
-      const { genres } = dataAsJson;
-      return genres;
-    } else throw new Error("DB read error: no valid data for genres");
-  }
-
-  async searchMovies(params: {
-    genres?: string[];
-    durationMin?: number;
-    durationMax?: number;
-  }): Promise<Movie[]> {
-    const movies = await this.readMovies;
-
-    const searchResult: Movie[] = [];
-    return searchResult;
-  }
-
-  private isMovieTheSame(movieA: Movie, movieB: Movie): boolean {
-    return (
-      movieA.director === movieB.director &&
-      movieA.genres === movieB.genres &&
-      movieA.title === movieB.title &&
-      movieA.year === movieB.year &&
-      movieA.runtime === movieB.runtime
-    );
-  }
-
-  private async checkDuplicate(
-    movieToCheck: Movie,
-  ): Promise<{ isUnique: boolean; newId?: number }> {
-    const movies = await this.readMovies();
-    let maxId = movieToCheck.id;
-    
-    const duplicates = movies.filter((el) => {
-      maxId = maxId < el.id ? el.id : maxId;
-      return this.isMovieTheSame(el, movieToCheck);
-    });
-
-    const isUnique = duplicates.length === 0;
-
-    return { isUnique, newId: isUnique && maxId };
-  }
-
-  async writeMovie(movieToSave: Movie): Promise<Movie> {
-    const {isUnique, newId} = await this.checkDuplicate(movieToSave)
-    if (isUnique) {
-      movieToSave = { ...movieToSave, id: newId }
-      const fileHandle = await fs.open(this.filePath);
-      const data = await fileHandle.readFile({ encoding: "utf-8" });
-      const dataAsJson = JSON.parse(data);
-      if (isMovieJsonObject(dataAsJson)) {
-        const { movies } = dataAsJson;
-  
-        return movieToSave;
-
-    } else throw new Error("Duplicate");
-    
-    } else throw new Error("DB read error: no valid data for genres");
+    await fileHandle.writeFile(JSON.stringify(dataToWrite));
+    await fileHandle.close();
   }
 }
