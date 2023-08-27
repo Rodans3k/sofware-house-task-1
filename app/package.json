@@ -11,7 +11,7 @@
     "pf": "prettier --write .",
     "test": "jest"
   },
-  "author": "",
+  "author": "mdrzewi",
   "license": "",
   "devDependencies": {
     "@jest/globals": "^29.6.3",
