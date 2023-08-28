@@ -2,7 +2,7 @@ import { createApp } from "./app";
 import { JsonFileConnector } from "./db/db";
 
 const port = process.env.PORT || 3000;
-const dbJsonPath = process.env.DB_FILE_PATH || "";
+const dbJsonPath = process.env.DB_FILE_PATH || "database.json";
 
 const db = new JsonFileConnector({ filePath: dbJsonPath });
 const app = createApp(db);

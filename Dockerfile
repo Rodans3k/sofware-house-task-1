@@ -4,6 +4,8 @@ WORKDIR /usr/src/app
 
 COPY app/ ./
 
+COPY task/db.json ./database.json
+
 RUN npm install && npm run build
 
 CMD [ "npm", "start" ]

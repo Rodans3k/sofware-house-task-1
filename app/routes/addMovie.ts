@@ -75,9 +75,8 @@ export async function addMovie(req: Request, res: Response) {
     return res.status(500).send(`Error while saving into DB: ${error}`);
   }
 
-  return res.status(200).send(newMovieInDb);
-
   // Send response, with saved object
+  return res.status(200).send(newMovieInDb);
 }
 
 export function inputValidator(
@@ -123,7 +122,7 @@ function searchDuplicates(
   input: inputMovie,
   movies: Movie[],
 ): { isUnique: boolean; newId: number } {
-  let freeIds = Array.from(Array(movies.length + 1).keys()).map(el => el + 1);
+  let freeIds = Array.from(Array(movies.length + 1).keys()).map((el) => el + 1);
   let isUnique = true;
   for (const movie of movies) {
     if (

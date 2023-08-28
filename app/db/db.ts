@@ -1,6 +1,5 @@
 import { PathLike } from "fs";
 import * as fs from "fs/promises";
-import path from "path";
 
 export interface DbConnector {
   readDB(): Promise<MovieJsonObject>;
@@ -26,7 +25,7 @@ function isMovie(a): a is Movie {
     typeof a?.runtime === "string" &&
     a?.genres &&
     Array.isArray(a.genres) &&
-    a.genres.forEach((el) => typeof el === "string") &&
+    a.genres.every((el) => typeof el === "string") &&
     typeof a?.director === "string"
   );
 }
@@ -40,10 +39,10 @@ function isMovieJsonObject(a): a is MovieJsonObject {
   return (
     a?.genres &&
     Array.isArray(a.genres) &&
-    a.genres.forEach((el) => typeof el === "string") &&
+    a.genres.every((el) => typeof el === "string") &&
     a?.movies &&
     Array.isArray(a.movies) &&
-    a.movies.forEach((el) => isMovie(el))
+    a.movies.every((el) => isMovie(el))
   );
 }
 
@@ -61,12 +60,12 @@ export class JsonFileConnector implements DbConnector {
     const dataAsJson = JSON.parse(data);
     if (isMovieJsonObject(dataAsJson)) {
       return dataAsJson;
-    } else throw new Error("DB read error: no valid data in DB");
+    } else throw new Error("no valid data in DB");
   }
 
   async writeDB(dataToWrite: MovieJsonObject): Promise<void> {
-    const fileHandle = await fs.open(this.filePath);
-    await fileHandle.writeFile(JSON.stringify(dataToWrite));
+    const fileHandle = await fs.open(this.filePath, "w");
+    await fileHandle.writeFile(JSON.stringify(dataToWrite), "utf-8");
     await fileHandle.close();
   }
 }
