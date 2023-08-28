@@ -48,7 +48,7 @@ const illegalGenres = [
   "Banana-Fi",
 ];
 
-const exampleMovies = [
+const exampleMovies: Movie[] = [
   {
     id: 1,
     title: "Movie number 1",
@@ -888,7 +888,7 @@ describe("Testing /movies POST endpoint", () => {
       },
       {
         ...exampleMovies[1],
-        id: undefined,
+        id: 123,
       },
       exampleMovies[1],
     ],
@@ -913,7 +913,8 @@ describe("Testing /movies POST endpoint", () => {
       // Compare
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(expectedResponseBody);
-      expect(appMockedDb.writeDB.mock.lastCall).toEqual(expectedSave);
+      expect(appMockedDb.writeDB.mock.lastCall.length).toEqual(1);
+      expect(appMockedDb.writeDB.mock.lastCall[0]).toEqual(expectedSave);
     },
   );
 

@@ -4,10 +4,10 @@ import { DbConnector } from "./db/db";
 import { initDataBase } from "./db/dbInit";
 import { moviesRouter } from "./routes/moviesRouter";
 
-
 export const createApp = (db: DbConnector) => {
   initDataBase(db);
   const app = express();
+  app.use(express.json());
   app.use("/docs", apiDocs);
   app.use("/api", moviesRouter);
 

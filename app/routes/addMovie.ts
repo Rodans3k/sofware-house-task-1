@@ -6,7 +6,7 @@ const addMovieRouter = express.Router();
 
 addMovieRouter.use(addMovie);
 
-interface inputMovie {
+export interface inputMovie {
   title: string;
   year: string;
   runtime: string;
@@ -16,14 +16,14 @@ interface inputMovie {
   plot?: string;
   posterUrl?: string;
 }
-function isInputMovie(a): a is inputMovie {
+export function isInputMovie(a): a is inputMovie {
   return (
     typeof a?.title === "string" &&
     typeof a?.year === "string" &&
     typeof a?.runtime === "string" &&
     a?.genres &&
     Array.isArray(a.genres) &&
-    a.genres.forEach((el) => typeof el === "string") &&
+    a.genres.every((el) => typeof el === "string") &&
     typeof a?.director === "string"
   );
 }
@@ -65,7 +65,7 @@ export async function addMovie(req: Request, res: Response) {
     if (!isUnique) throw new Error("Movie is already in database");
     newMovieInDb = { ...inputMovie, id: newId };
   } catch (error) {
-    return res.status(400).send(error);
+    return res.status(400).send(`Duplication error: ${error}`);
   }
 
   // Write data to DB
@@ -75,18 +75,18 @@ export async function addMovie(req: Request, res: Response) {
     return res.status(500).send(`Error while saving into DB: ${error}`);
   }
 
-  return res.status(200).send([newMovieInDb]);
+  return res.status(200).send(newMovieInDb);
 
   // Send response, with saved object
 }
 
-function inputValidator(input: inputMovie, allowedGenres: string[]): string[] {
+export function inputValidator(
+  input: inputMovie,
+  allowedGenres: string[],
+): string[] {
   const errors = [];
-  if (typeof parseInt(input.year) === "number") errors.push("invalid year");
-  if (
-    typeof parseInt(input.runtime) === "number" &&
-    parseInt(input.runtime) <= 0
-  )
+  if (isNaN(parseInt(input.year))) errors.push("invalid year");
+  if (isNaN(parseInt(input.runtime)) || parseInt(input.runtime) <= 0)
     errors.push("invalid runtime");
   if (input.title.length > 255)
     errors.push("title too long, max 255 characters");
@@ -123,7 +123,7 @@ function searchDuplicates(
   input: inputMovie,
   movies: Movie[],
 ): { isUnique: boolean; newId: number } {
-  let freeIds = Array(movies.length + 1).map((_, index) => index + 1);
+  let freeIds = Array.from(Array(movies.length + 1).keys()).map(el => el + 1);
   let isUnique = true;
   for (const movie of movies) {
     if (
@@ -138,7 +138,7 @@ function searchDuplicates(
       break;
     }
     const indexToRemove = freeIds.findIndex((el) => el === movie.id);
-    if (indexToRemove > -1) freeIds.splice(indexToRemove);
+    if (indexToRemove > -1) freeIds.splice(indexToRemove, 1);
   }
 
   return { isUnique, newId: isUnique ? freeIds[0] : undefined };
