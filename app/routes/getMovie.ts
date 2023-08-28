@@ -98,7 +98,7 @@ export function searchMovies(
         }
       });
     });
-    // { (movie id): (hits) } -> [[(movie id, (hits))]] -> sort -> map into movies
+    // { (movie id): (hits) } -> [[(movie id), (hits)]] -> sort (most matching genres / lowest id) -> map into movies
     if (Object.keys(searchPartialsDict).length > 0) {
       searchResults = Object.entries(searchPartialsDict)
         .sort((a, b) =>
