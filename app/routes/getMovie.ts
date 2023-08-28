@@ -7,13 +7,6 @@ interface SearchQuery {
   genres?: string;
 }
 
-function isSearchQuery(a): a is SearchQuery {
-  return (
-    (!!a.runtime || typeof a.runtime === "string") &&
-    (!!a.genres || typeof a.genres === "string")
-  );
-}
-
 export async function getMovies(
   req: Request<unknown, unknown, unknown, SearchQuery>,
   res: Response,

@@ -33,11 +33,11 @@
         "parameters": [
           {
             "in": "query",
-            "name": "duration",
+            "name": "runtime",
             "schema": {
-              "type": "integer"
+              "type": "string"
             },
-            "description": "Film duration in minutes. Returns movies within 10 minutes range"
+            "description": "Film duration in minutes. Accepts only positive values. Returns movies within 10 minutes range"
           },
           {
             "in": "query",
@@ -75,7 +75,7 @@
           "200": {
             "description": "Successful operation"
           },
-          "405": {
+          "400": {
             "description": "Invalid input"
           }
         }
@@ -100,12 +100,12 @@
             "example": ["Comedy", "History"]
           },
           "year": {
-            "type": "number",
-            "example": 2011
+            "type": "string",
+            "example": "2011"
           },
           "runtime": {
-            "type": "number",
-            "example": 140
+            "type": "string",
+            "example": "140"
           },
           "director": {
             "type": "string",

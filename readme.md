@@ -32,15 +32,16 @@ npm install
 npm run build
 ```
 
-3. run application using
+3. copy database file into `app/` project directory as database.json, or provide path in env variable `DB_FILE_PATH`
+
+4. run application using
 ```bash
 npm start
 ```
 
-
 ## Using the application
 
-At `http://localhost:3000/docs/` there is full openapi specification of available endpoints.
+At `localhost:3000/docs/` there is full openapi specification of available endpoints.
 Note: Using swagger UI it's possible to query those endpoints from browser.
 
 ## Application development
