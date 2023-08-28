@@ -1,13 +1,5 @@
 import { inputValidator, inputMovie } from "../routes/addMovie";
 
-const validMov: inputMovie = {
-  title: "string",
-  year: "string",
-  runtime: "string",
-  genres: ["a", "b"],
-  director: "string",
-};
-
 describe("POST input validator test", () => {
   it.each([
     [

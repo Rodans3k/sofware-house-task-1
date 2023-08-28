@@ -86,30 +86,39 @@ function queryValidator(
   return errors;
 }
 
-function searchMovies(
+export function searchMovies(
   movies: Movie[],
   searchGenres?: string[],
   searchRuntime?: number,
 ): Movie[] {
   let searchResults: Movie[];
   const runtimeRangeLeafs = 10;
-  const searchPartialsDict: { [k: number]: number } = {};
+  const searchPartialsDict: { [k: string]: number } = {};
 
-  if (!!searchGenres) {
+  if (searchGenres.length > 0) {
     for (const movie of movies) {
       for (const searchGenre of searchGenres) {
         if (movie.genres.includes(searchGenre)) {
-          searchPartialsDict[movie.id]
-            ? searchPartialsDict[movie.id]++
-            : (searchPartialsDict[movie.id] = 1);
+          if (!!searchPartialsDict[movie.id]) searchPartialsDict[movie.id] = searchPartialsDict[movie.id] + 1
+            else searchPartialsDict[movie.id] = 1;
         }
       }
     }
+    console.log(JSON.stringify(Object.entries(searchPartialsDict)
+    .sort((a, b) => (a[1] < b[1] || (a[1] === b[1] && parseInt(a[0]) > parseInt(b[0])) ? 1 : -1))))
 
-    // { 1(movie id): 3(hits) } -> [[1(movie id, 3(hits))]] -> sort -> map into movies
+    // { (movie id): (hits) } -> [[(movie id, (hits))]] -> sort -> map into movies
     searchResults = Object.entries(searchPartialsDict)
-      .sort((a, b) => (a[1] > b[1] || (a[1] === b[1] && a[0] < b[0]) ? 1 : -1))
-      .map((el) => movies[el[0]]);
+      .sort((a, b) => (a[1] < b[1] || (a[1] === b[1] && parseInt(a[0]) > parseInt(b[0])) ? 1 : -1))
+      .map((el): Movie => {
+        const movieId = parseInt(el[0]);
+        const movieIndex = movies.findIndex((el) => {
+          return el.id === movieId
+        })
+        return movies[movieIndex]
+      }
+      );
+    console.log(JSON.stringify(searchResults));
   } else {
     searchResults = movies;
   }
