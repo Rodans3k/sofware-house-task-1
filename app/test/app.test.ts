@@ -127,9 +127,7 @@ describe("Testing /movies GET endpoint", () => {
 
       // Compare
       expect(response.statusCode).toEqual(200);
-      expect(exampleMovies).toHaveBeenCalledWith(
-        expect.objectContaining(response.body),
-      );
+      expect(exampleMovies).toEqual(expect.arrayContaining(response.body));
     });
   });
 
@@ -193,7 +191,7 @@ describe("Testing /movies GET endpoint", () => {
       const initialDbContent: MovieJsonObject = {
         genres: allowedGenres,
         movies: [
-          expectedResponseBody[1],
+          expectedResponseBody[0],
           { ...exampleMovies[2], genres: [allowedGenres[2], allowedGenres[3]] },
         ],
       };
@@ -237,7 +235,7 @@ describe("Testing /movies GET endpoint", () => {
       const initialDbContent: MovieJsonObject = {
         genres: allowedGenres,
         movies: [
-          expectedResponseBody[1],
+          ...expectedResponseBody,
           { ...exampleMovies[2], genres: [allowedGenres[2], allowedGenres[3]] },
         ],
       };
@@ -367,6 +365,7 @@ describe("Testing /movies GET endpoint", () => {
       const initialDbContent: MovieJsonObject = {
         genres: allowedGenres,
         movies: [
+          ...expectedResponseBody,
           { ...exampleMovies[3], runtime: "49" },
           { ...exampleMovies[4], runtime: "71" },
         ],
@@ -386,11 +385,7 @@ describe("Testing /movies GET endpoint", () => {
       // Compare
       expect(response.statusCode).toEqual(200);
       expect(response.body.length).toEqual(expectedResponseBody.length);
-      response.body.forEach((responseMovie) => {
-        expect(expectedResponseBody).toHaveBeenCalledWith(
-          expect.objectContaining(responseMovie),
-        );
-      });
+      expect(response.body).toMatchObject(expectedResponseBody);
     });
 
     it("Returns 200 with matching list of movies, contains edge cases", async () => {
@@ -402,6 +397,7 @@ describe("Testing /movies GET endpoint", () => {
       const initialDbContent: MovieJsonObject = {
         genres: allowedGenres,
         movies: [
+          ...expectedResponseBody,
           { ...exampleMovies[3], runtime: "49" },
           { ...exampleMovies[4], runtime: "71" },
         ],
@@ -421,11 +417,7 @@ describe("Testing /movies GET endpoint", () => {
       // Compare
       expect(response.statusCode).toEqual(200);
       expect(response.body.length).toEqual(expectedResponseBody.length);
-      response.body.forEach((responseMovie) => {
-        expect(expectedResponseBody).toHaveBeenCalledWith(
-          expect.objectContaining(responseMovie),
-        );
-      });
+      expect(response.body).toMatchObject(expectedResponseBody);
     });
   });
 
@@ -540,7 +532,13 @@ describe("Testing /movies GET endpoint", () => {
           runtime: "60",
           genres: `${allowedGenres[0]}, ${allowedGenres[5]}`,
         },
-        [{ ...exampleMovies[0], genres: [allowedGenres[0], allowedGenres[1]] }],
+        [
+          {
+            ...exampleMovies[0],
+            genres: [allowedGenres[0], allowedGenres[1]],
+            runtime: "60",
+          },
+        ],
       ],
       [
         {
@@ -562,7 +560,13 @@ describe("Testing /movies GET endpoint", () => {
           runtime: "60",
           genres: `${allowedGenres[0]}, ${allowedGenres[5]}`,
         },
-        [{ ...exampleMovies[0], genres: [allowedGenres[0], allowedGenres[1]] }],
+        [
+          {
+            ...exampleMovies[0],
+            genres: [allowedGenres[0], allowedGenres[1]],
+            runtime: "60",
+          },
+        ],
       ],
     ])(
       "Returns 200 and list with single matching movie",
@@ -636,7 +640,7 @@ describe("Testing /movies GET endpoint", () => {
           },
           {
             ...exampleMovies[1],
-            id: 13,
+            id: 12,
             genres: [allowedGenres[0]],
             runtime: "60",
           },
@@ -685,7 +689,7 @@ describe("Testing /movies GET endpoint", () => {
           },
           {
             ...exampleMovies[1],
-            id: 13,
+            id: 12,
             genres: [allowedGenres[0]],
             runtime: "60",
           },

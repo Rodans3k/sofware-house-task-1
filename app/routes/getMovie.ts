@@ -47,8 +47,8 @@ export async function getMovies(
   // Search movies
   const searchResults = searchMovies(
     movies,
-    searchGenres,
-    parseInt(searchRuntime),
+    searchGenres?.length > 0 ? searchGenres : undefined,
+    searchRuntime ? parseInt(searchRuntime) : undefined,
   );
 
   // return movies list
@@ -91,49 +91,53 @@ export function searchMovies(
   searchGenres?: string[],
   searchRuntime?: number,
 ): Movie[] {
-  let searchResults: Movie[];
+  let searchResults: Movie[] = [];
   const runtimeRangeLeafs = 10;
   const searchPartialsDict: { [k: string]: number } = {};
-
-  if (searchGenres.length > 0) {
-    for (const movie of movies) {
-      for (const searchGenre of searchGenres) {
+  if (movies.length < 1) return [];
+  if (searchGenres) {
+    movies.forEach((movie) => {
+      searchGenres.forEach((searchGenre) => {
         if (movie.genres.includes(searchGenre)) {
-          if (!!searchPartialsDict[movie.id]) searchPartialsDict[movie.id] = searchPartialsDict[movie.id] + 1
-            else searchPartialsDict[movie.id] = 1;
+          if (!!searchPartialsDict[movie.id])
+            searchPartialsDict[movie.id] = searchPartialsDict[movie.id] + 1;
+          else searchPartialsDict[movie.id] = 1;
         }
-      }
-    }
-    console.log(JSON.stringify(Object.entries(searchPartialsDict)
-    .sort((a, b) => (a[1] < b[1] || (a[1] === b[1] && parseInt(a[0]) > parseInt(b[0])) ? 1 : -1))))
-
+      });
+    });
     // { (movie id): (hits) } -> [[(movie id, (hits))]] -> sort -> map into movies
-    searchResults = Object.entries(searchPartialsDict)
-      .sort((a, b) => (a[1] < b[1] || (a[1] === b[1] && parseInt(a[0]) > parseInt(b[0])) ? 1 : -1))
-      .map((el): Movie => {
-        const movieId = parseInt(el[0]);
-        const movieIndex = movies.findIndex((el) => {
-          return el.id === movieId
-        })
-        return movies[movieIndex]
-      }
-      );
-    console.log(JSON.stringify(searchResults));
+    if (Object.keys(searchPartialsDict).length > 0) {
+      searchResults = Object.entries(searchPartialsDict)
+        .sort((a, b) =>
+          a[1] < b[1] || (a[1] === b[1] && parseInt(a[0]) > parseInt(b[0]))
+            ? 1
+            : -1,
+        )
+        .map((el): Movie => {
+          const movieId = parseInt(el[0]);
+          const movieIndex = movies.findIndex((el) => {
+            return el.id === movieId;
+          });
+          return movies[movieIndex];
+        });
+    }
   } else {
-    searchResults = movies;
+    searchResults = [...movies];
   }
 
-  if (!!searchRuntime) {
-    searchResults = searchResults.filter((el) =>
+  if (searchRuntime) {
+    searchResults = searchResults?.filter((el) =>
       inRange(
         parseInt(el.runtime),
         searchRuntime - runtimeRangeLeafs,
         searchRuntime + runtimeRangeLeafs,
       ),
     );
-  } else {
-    searchResults = [searchResults[0]];
   }
 
-  return searchResults;
+  if (!searchRuntime && !searchGenres) {
+    searchResults ? (searchResults = [searchResults[0]]) : []; // https://xkcd.com/221/
+  }
+
+  return searchResults ? searchResults : [];
 }

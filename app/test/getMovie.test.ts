@@ -15,7 +15,7 @@ const movies: Movie[] = [
     title: "stringification",
     year: "1995",
     runtime: "65",
-    genres: ["a", "b"],
+    genres: ["c", "d"],
     director: "string",
   },
   {
@@ -23,7 +23,7 @@ const movies: Movie[] = [
     title: "re-string",
     year: "1995",
     runtime: "70",
-    genres: ["a", "b"],
+    genres: ["c", "d"],
     director: "string",
   },
   {
@@ -31,13 +31,58 @@ const movies: Movie[] = [
     title: "string 4",
     year: "1995",
     runtime: "75",
-    genres: ["a", "b"],
+    genres: ["d"],
     director: "string",
   },
 ];
 
 describe("GET search test", () => {
   it.each([
+    [
+      movies,
+      [
+        {
+          id: 1,
+          title: "string",
+          year: "1995",
+          runtime: "60",
+          genres: ["a", "b"],
+          director: "string",
+        },
+      ],
+      ["a", "b"],
+      54,
+    ],
+    [
+      movies,
+      [
+        {
+          id: 1,
+          title: "string",
+          year: "1995",
+          runtime: "60",
+          genres: ["a", "b"],
+          director: "string",
+        },
+      ],
+      undefined,
+      54,
+    ],
+    [
+      movies,
+      [
+        {
+          id: 1,
+          title: "string",
+          year: "1995",
+          runtime: "60",
+          genres: ["a", "b"],
+          director: "string",
+        },
+      ],
+      ["a", "b"],
+      undefined,
+    ],
     [
       movies,
       [
