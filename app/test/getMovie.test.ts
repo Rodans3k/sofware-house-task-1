@@ -39,6 +39,30 @@ const movies: Movie[] = [
 describe("GET search test", () => {
   it.each([
     [
+      [],
+      [],
+      ["a", "b"],
+      54,
+    ],
+    [
+      [],
+      [],
+      undefined,
+      54,
+    ],
+    [
+      [],
+      [],
+      ["a", "b"],
+      undefined,
+    ],
+    [
+      [],
+      [],
+      undefined,
+      undefined,
+    ],
+    [
       movies,
       [
         {
@@ -97,6 +121,75 @@ describe("GET search test", () => {
       ],
       ["a", "b"],
       54,
+    ],
+    [
+      movies,
+      [
+        {
+          id: 1,
+          title: "string",
+          year: "1995",
+          runtime: "60",
+          genres: ["a", "b"],
+          director: "string",
+        },
+      ],
+      undefined,
+      undefined,
+    ],
+    [
+      movies,
+      [
+        {
+          id: 2,
+          title: "stringification",
+          year: "1995",
+          runtime: "65",
+          genres: ["c", "d"],
+          director: "string",
+        },
+        {
+          id: 3,
+          title: "re-string",
+          year: "1995",
+          runtime: "70",
+          genres: ["c", "d"],
+          director: "string",
+        },
+        {
+          id: 4,
+          title: "string 4",
+          year: "1995",
+          runtime: "75",
+          genres: ["d"],
+          director: "string",
+        },
+      ],
+      ["c", "d"],
+      undefined,
+    ],
+    [
+      movies,
+      [
+        {
+          id: 3,
+          title: "re-string",
+          year: "1995",
+          runtime: "70",
+          genres: ["c", "d"],
+          director: "string",
+        },
+        {
+          id: 4,
+          title: "string 4",
+          year: "1995",
+          runtime: "75",
+          genres: ["d"],
+          director: "string",
+        },
+      ],
+      ["c", "d"],
+      80,
     ],
   ])(
     "search test",
